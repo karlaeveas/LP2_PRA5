@@ -1,0 +1,153 @@
+#include <iostream>
+using namespace std;
+
+class FormaDePago {
+protected:
+    string nombre;
+    double monto;
+    double saldo;
+public:
+    FormaDePago() {
+        nombre = "";
+        monto = 0.0;
+        saldo = 0.0;
+    }
+    FormaDePago(string nombre, double monto, double saldo) {
+        this->nombre = nombre;
+        this->monto = monto;
+        this->saldo = saldo;
+    }
+    virtual ~FormaDePago() {
+        cout << "Saliendo del aplicativo" << endl;
+        cout << endl;
+    }
+    virtual bool VerificarSaldo() = 0;
+    virtual void Pagar() = 0;
+};
+
+class Yape : public FormaDePago {
+public:
+    Yape() : FormaDePago("Yape", 0.0, 0.0) {}
+    Yape(double monto, double saldo) : FormaDePago("Yape", monto, saldo) {}
+
+    bool VerificarSaldo() override {
+        cout << "Saldo actual: " << saldo << endl;
+        cout << "Monto a transferir: " << monto << endl;
+        return saldo >= monto && monto <= 500.0;
+    }
+
+    void Pagar() override {
+        if (VerificarSaldo()) {
+            cout << "Realizando pago a traves de Yape..." << endl;
+            saldo -= monto;
+            cout << "Pago exitoso." << endl;
+            cout << endl;
+        }
+        else {
+            cout << "No se puede realizar el pago debido a fondos insuficientes o excede el limite de monto permitido." << endl;
+            cout << endl;
+        }
+    }
+};
+
+class Plin : public FormaDePago {
+public:
+    Plin() : FormaDePago("Plin", 0.0, 0.0) {}
+    Plin(double monto, double saldo) : FormaDePago("Plin", monto, saldo) {}
+
+    bool VerificarSaldo() override {
+        cout << "Saldo actual: " << saldo << endl;
+        cout << "Monto a transferir: " << monto << endl;
+        return saldo >= monto && monto <= 700.0;
+    }
+
+    void Pagar() override {
+        if (VerificarSaldo()) {
+            cout << "Realizando pago a traves de Plin..." << endl;
+            saldo -= monto;
+            cout << "Pago exitoso." << endl;
+            cout << endl;
+        }
+        else {
+            cout << "No se puede realizar el pago debido a fondos insuficientes o excede el limite de monto permitido." << endl;
+            cout << endl;
+        }
+    }
+};
+
+class TransferenciaBancaria : public FormaDePago {
+public:
+    TransferenciaBancaria() : FormaDePago("Transferencia Bancaria", 0.0, 0.0) {}
+    TransferenciaBancaria(double monto, double saldo) : FormaDePago("Transferencia Bancaria", monto, saldo) {}
+
+    bool VerificarSaldo() override {
+        cout << "Saldo actual: " << saldo << endl;
+        cout << "Monto a transferir: " << monto << endl;
+        return saldo >= monto;
+    }
+
+    void Pagar() override {
+        if (VerificarSaldo()) {
+            cout << "Realizando transferencia bancaria..." << endl;
+            if (monto <= 1000.0) {
+                saldo -= monto;
+                cout << "Transferencia exitosa." << endl;
+            }
+            else {
+                double comision = monto * 0.15;
+                saldo -= (monto + comision);
+                cout << "Transferencia exitosa con una comision del 15%." << endl;
+                cout << endl;
+            }
+        }
+        else {
+            cout << "No se puede realizar la transferencia debido a fondos insuficientes." << endl;
+            cout << endl;
+        }
+    }
+};
+
+void mostrarMenu() {
+    cout << "\nMenu de opciones:" << endl;
+    cout << "1. Yape" << endl;
+    cout << "2. Plin" << endl;
+    cout << "3. Transferencia Bancaria" << endl;
+    cout << "4. Salir" << endl;
+    cout << "Ingrese una opcion: ";
+}
+
+int main() {
+    int opcion;
+
+    do {
+        mostrarMenu();
+        cin >> opcion;
+
+        switch (opcion) {
+        case 1: {
+                FormaDePago* metodo_pago = new Yape(400.0, 600.0);
+                metodo_pago->Pagar();
+                delete metodo_pago;
+                break;
+            }
+        case 2: {
+            FormaDePago* metodo_pago = new Plin(800.0, 900.0);
+            metodo_pago->Pagar();
+            delete metodo_pago;
+            break;
+        }
+        case 3: {
+            FormaDePago* metodo_pago = new TransferenciaBancaria(1200.0, 1500.0);
+            metodo_pago->Pagar();
+            delete metodo_pago;
+            break;
+        }
+        case 4:
+            cout << "Saliendo del programa..." << endl;
+            break;
+        default:
+            cout << "Opcion invalida. Intente nuevamente." << endl;
+        }
+    } while (opcion != 4);
+        return 0;
+}
